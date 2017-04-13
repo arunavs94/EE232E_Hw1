@@ -122,10 +122,10 @@ def part4():
 	# dd_in = Graph.degree_distribution(g1,mode="in")
 	# dd_out = Graph.degree_distribution(g1,mode="out")
 
-	# Plotting degree distribution
-	plt.hist(g1.degree())
-	plt.title('Degree distribution for Forest Fire')
-	plt.show()
+	# # Plotting degree distribution
+	# plt.hist(g1.degree())
+	# plt.title('Degree distribution for Forest Fire')
+	# plt.show()
 
 
 if __name__ == '__main__':
