@@ -61,6 +61,41 @@ def part1():
 		else:
 			print "Graph g_test is disconnected, with p = ", p_test
 
+def part2():
+
+	print '\n Question 2 \n'
+
+	# Generate network for n = 1,000
+	g1 = Graph.Static_Power_Law(n=1000,m=200,exponent_out=3,exponent_in=-1)
+	g2 = Graph.Static_Power_Law(n=10000,m=200,exponent_out=3,exponent_in=-1)
+
+	# Plot degree distribution 
+	plt.figure(2)
+	plt.hist(g1.degree())
+	plt.title('Degree distribution for n = 1000 & degree distribution proportional to $x^{-3}$')
+	# plt.show()
+
+	# Diameter of graph for n = 1,000
+	print "The diameter of the graph with 1,000 nodes is: ", g1.diameter(directed = False)
+	
+	#Check connectivity
+	if g1.is_connected():
+		print "Graph with 1,000 nodes is connected."
+	else:
+		print "Graph with 1,000 nodes is disconnected."
+
+	# Giant connected component
+	cluster1 = g1.components(mode=STRONG)
+	cluster2 = g2.components(mode=STRONG)
+	GCC1 = cluster1.giant()
+	summary(GCC1)
+	GCC2 = cluster2.giant()
+	summary(GCC2)
+	# Calculate modularity
+	m1 = g1.modularity(cluster1,weights=None)
+	m2 = g2.modularity(cluster2,weights=None)
+	print 'Modularity for network with 1,000 nodes is' , m1
+	print 'Modularity for network with 10,000 nodes is' , m2
 	
 
 	
