@@ -5,10 +5,10 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 def main():
-	part1()
+	# part1()
 	# part2()
 	# part3()
-	# part4()
+	part4()
 
 def part1():
 
@@ -88,54 +88,58 @@ def part2():
 
 	print '\n Question 2 \n'
 
-	g1_diameter = 0
-	g1_degree = []
+	# g1_diameter = 0.0
+	# g1_degree = []
 
-	for i in range(0,100): #100 instances
-		# Generate network for n = 1,000 & 10,000 
-		g1 = Graph.Barabasi(n=1000)
-		g2 = Graph.Barabasi(n=10000)
+	# for i in range(0,100): #100 instances
+	# 	# Generate network for n = 1,000 & 10,000 
+	# 	g1 = Graph.Barabasi(n=1000)
+	# 	g2 = Graph.Barabasi(n=10000)
 
-		# Diameter of graph for n = 1,000
-		g1_diameter = g1_diameter + g1.diameter()
+	# 	# Diameter of graph for n = 1,000
+	# 	g1_diameter = g1_diameter + g1.diameter()
 
-		# concatenate each instance for histogram
-		g1_degree = g1_degree + g1.degree()
+	# 	# concatenate each instance for histogram
+	# 	g1_degree = g1_degree + g1.degree()
 
 
-	# Plot degree distribution 
-	plt.figure(2)
-	plt.hist(g1_degree, bins =20) 
-	plt.title('Degree distribution for n = 1000 & degree distribution proportional to $x^{-3}$')
-	plt.xlabel('Degree')
-	plt.ylabel('Density')
-	plt.show()
+	# # Plot degree distribution 
+	# plt.figure(2)
+	# plt.hist(g1_degree, bins =20) 
+	# plt.title('Degree distribution for n = 1000 & degree distribution proportional to $x^{-3}$')
+	# plt.xlabel('Degree')
+	# plt.ylabel('Density')
+	# # plt.show()
 
-	print "The diameter of the graph with 1,000 nodes is: %", g1_diameter/100
+	# print "The diameter of the graph with 1,000 nodes is: ", g1_diameter/100
 
-	
-	# #Check connectivity
+	g1 = Graph.Barabasi(n=1000)
+	g2 = Graph.Barabasi(n=10000)
+	# summary(g1)
+	#Check connectivity
 	# if g1.is_connected():
 	# 	print "Graph with 1,000 nodes is connected."
 	# else:
 	# 	print "Graph with 1,000 nodes is disconnected."
 
-	# # Giant connected component
-	# cluster1 = g1.clusters()
-	# cluster2 = g2.clusters()
+	# Giant connected component
+	cluster1 = g1.components()
+	# print "cluster 1",cluster1
+	cluster2 = g2.components()
 
-	# GCC1 = cluster1.giant()
-	# GCC2 = cluster2.giant()
+	GCC1 = cluster1.giant()
+	GCC2 = cluster2.giant()
 
-	# GCC1_community = GCC1.community_fastgreedy()	
-	# GCC2_community = GCC2.community_fastgreedy()	
+	GCC1_community = g1.community_fastgreedy()	
+	GCC2_community = g2.community_fastgreedy()	
+	# print GCC1_community
 
-	# # Calculate modularity
-	# m1 = Graph.modularity(GCC1_community,weights=None)
-	# m2 = Graph.modularity(GCC2_community,weights=None)
+	# Calculate modularity
+	m1 = GCC1.modularity()
+	m2 = GCC2.modularity()
 
-	# print 'Modularity for network with 1,000 nodes is' , m1
-	# print 'Modularity for network with 10,000 nodes is' , m2
+	print 'Modularity for network with 1,000 nodes is' , m1
+	print 'Modularity for network with 10,000 nodes is' , m2
 	
 
 	
@@ -144,6 +148,7 @@ def part3():
 	g1 = Graph.Erdos_Renyi(n=1000,p=0.01)
 	g2 = Graph.Erdos_Renyi(n=1000,p=0.05)
 	g3 = Graph.Erdos_Renyi(n=1000,p=0.1)
+
 
 	g1.as_undirected()
 	g2.as_undirected()
@@ -156,16 +161,21 @@ def part4():
 	fwprob = 0.37
 	bwfactor = 0.32/0.37
 
-	g1 = Graph.Forest_Fire(nodes, fwprob, bwfactor, directed = False)
+	g1 = Graph.Forest_Fire(n=nodes, fw_prob=fwprob, bw_factor=bwfactor, directed = True)
 
 	# # If direction degree dists are needed
-	# dd_in = Graph.degree_distribution(g1,mode="in")
-	# dd_out = Graph.degree_distribution(g1,mode="out")
-
+	dd_in = g1.indegree()
+	dd_out = g1.outdegree()
 	# # Plotting degree distribution
-	# plt.hist(g1.degree())
-	# plt.title('Degree distribution for Forest Fire')
-	# plt.show()
+	plt.hist(dd_in,bins=30)
+	plt.title('In-Degree distribution for Forest Fire')
+	
+	plt.figure()
+	plt.hist(dd_out,bins=30)
+	plt.title('Out-Degree distribution for Forest Fire')
+	plt.show()
+
+	print "The diameter of the forest fire directed network is: ", g1.diameter()
 
 
 if __name__ == '__main__':
