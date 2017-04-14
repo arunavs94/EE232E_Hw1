@@ -6,12 +6,15 @@ import numpy as np
 
 def main():
 	# part1()
-	# part2()
+	part2()
 	# part3()
-	part4()
+	# part4()
 
 def part1():
 
+	print '/n Question 1 /n'
+
+	# initialize variables 
 	g1_diameter = 0.0; g2_diameter = 0.0; g3_diameter = 0.0; 
 	g1_con = 0.0; g2_con = 0.0; g3_con = 0.0; 
 	p_tot = 0.0
@@ -23,25 +26,6 @@ def part1():
 		g1 = Graph.Erdos_Renyi(n=1000,p=0.01)
 		g2 = Graph.Erdos_Renyi(n=1000,p=0.05)
 		g3 = Graph.Erdos_Renyi(n=1000,p=0.1)
-
-		# Plotting degree distributions (how do we average histogram plots?)
-		# plt.hist(g1.degree(),bins = 20 )
-		# plt.title('Degree distribution for n = 1000, p=0.01')
-		# plt.xlabel('Degree')
-		# plt.ylabel('Density')
-		# plt.show()
-
-		# plt.hist(g2.degree(),bins = 25 )
-		# plt.title('Degree distribution for n = 1000, p=0.05')
-		# plt.xlabel('Degree')
-		# plt.ylabel('Density')
-		# plt.show()
-
-		# plt.hist(g3.degree(),bins = 30 )
-		# plt.title('Degree distribution for n = 1000, p=0.1')
-		# plt.xlabel('Degree')
-		# plt.ylabel('Density')
-		# plt.show()
 
 		# Checking connectivity 
 		if g1.is_connected() == 1:
@@ -66,6 +50,24 @@ def part1():
 
 		p_tot = p_tot + p_temp
 
+	# Plotting degree distributions 
+	plt.hist(g1.degree(),bins = 30 )
+	plt.title('Degree distribution for n = 1000, p=0.01')
+	plt.xlabel('Degree')
+	plt.ylabel('Frequency')
+	plt.show()
+
+	plt.hist(g2.degree(),bins = 30 )
+	plt.title('Degree distribution for n = 1000, p=0.05')
+	plt.xlabel('Degree')
+	plt.ylabel('Frequency')
+	plt.show()
+
+	plt.hist(g3.degree(),bins = 30 )
+	plt.title('Degree distribution for n = 1000, p=0.1')
+	plt.xlabel('Degree')
+	plt.ylabel('Frequency')
+	plt.show()
 
 	# Print diameters of each graph
 	print "The average diameter for p = 0.01 over 100 trials is: ", g1_diameter/100
@@ -88,58 +90,52 @@ def part2():
 
 	print '\n Question 2 \n'
 
-	# g1_diameter = 0.0
-	# g1_degree = []
+	# initialze variables 
+	g1_diameter = 0.0; num_connectivity = 0.0
 
-	# for i in range(0,100): #100 instances
-	# 	# Generate network for n = 1,000 & 10,000 
-	# 	g1 = Graph.Barabasi(n=1000)
-	# 	g2 = Graph.Barabasi(n=10000)
+	for i in range(0,100):
+		g1 = Graph.Barabasi(n=1000)
 
-	# 	# Diameter of graph for n = 1,000
-	# 	g1_diameter = g1_diameter + g1.diameter()
+		# Calculate diameter
+		g1_diameter = g1_diameter + g1.diameter()
 
-	# 	# concatenate each instance for histogram
-	# 	g1_degree = g1_degree + g1.degree()
+		# Check connectivity
+		if g1.is_connected():
+			num_connectivity = num_connectivity + 1; 
 
 
-	# # Plot degree distribution 
-	# plt.figure(2)
-	# plt.hist(g1_degree, bins =20) 
-	# plt.title('Degree distribution for n = 1000 & degree distribution proportional to $x^{-3}$')
-	# plt.xlabel('Degree')
-	# plt.ylabel('Density')
-	# # plt.show()
-
-	# print "The diameter of the graph with 1,000 nodes is: ", g1_diameter/100
-
-	g1 = Graph.Barabasi(n=1000)
 	g2 = Graph.Barabasi(n=10000)
-	# summary(g1)
-	#Check connectivity
-	# if g1.is_connected():
-	# 	print "Graph with 1,000 nodes is connected."
-	# else:
-	# 	print "Graph with 1,000 nodes is disconnected."
+
+	# Plot degree distribution 
+	plt.figure(2)
+	plt.hist(g1.degree(), bins =20) 
+	plt.title('Fat-Tailed Degree distribution ')
+	plt.xlabel('Degree')
+	plt.ylabel('Frequency')
+	plt.show()
 
 	# Giant connected component
-	cluster1 = g1.components()
-	# print "cluster 1",cluster1
-	cluster2 = g2.components()
+	GCC1 = g1.clusters().giant()
+	GCC1 = g2.clusters().giant()
 
-	GCC1 = cluster1.giant()
-	GCC2 = cluster2.giant()
-
-	GCC1_community = g1.community_fastgreedy()	
-	GCC2_community = g2.community_fastgreedy()	
-	# print GCC1_community
+	# fast greedy
+	community1 = g1.community_fastgreedy()	
+	community2 = g2.community_fastgreedy()	
 
 	# Calculate modularity
-	m1 = GCC1.modularity()
-	m2 = GCC2.modularity()
+	m1 = g1.modularity(community1.as_clustering())
+	m2 = g2.modularity(community2.as_clustering())
+	
+
+	# Print variables 
+	print 'Average diameter for network with 1,000 nodes is' , g1_diameter/100
+
+	print 'Probability the fat-tailed network is connected is : %', num_connectivity
 
 	print 'Modularity for network with 1,000 nodes is' , m1
 	print 'Modularity for network with 10,000 nodes is' , m2
+
+
 	
 
 	
