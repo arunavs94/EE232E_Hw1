@@ -5,128 +5,178 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 def main():
-	# part1()
-	# part3()
-	part4()
+        # part1()
+        # part2()
+        part3()
+        # part4()
 
 def part1():
 
-	# Generating random networks
-	g1 = Graph.Erdos_Renyi(n=1000,p=0.01)
-	g2 = Graph.Erdos_Renyi(n=1000,p=0.05)
-	g3 = Graph.Erdos_Renyi(n=1000,p=0.1)
+        g1_diameter = 0.0; g2_diameter = 0.0; g3_diameter = 0.0; 
+        g1_con = 0.0; g2_con = 0.0; g3_con = 0.0; 
+        p_tot = 0.0
 
-	# Plotting degree distributions
-	plt.hist(g1.degree())
-	plt.title('Degree distribution for n = 1000, p=0.01')
-	plt.show()
+        for i in range(0,100):
+                p_temp = 0.0
 
-	plt.hist(g2.degree())
-	plt.title('Degree distribution for n = 1000, p=0.05')
-	plt.show()
+                # Generating random networks
+                g1 = Graph.Erdos_Renyi(n=1000,p=0.01)
+                g2 = Graph.Erdos_Renyi(n=1000,p=0.05)
+                g3 = Graph.Erdos_Renyi(n=1000,p=0.1)
 
-	plt.hist(g3.degree())
-	plt.title('Degree distribution for n = 1000, p=0.1')
-	plt.show()
+                # Plotting degree distributions (how do we average histogram plots?)
+                # plt.hist(g1.degree(),bins = 20 )
+                # plt.title('Degree distribution for n = 1000, p=0.01')
+                # plt.xlabel('Degree')
+                # plt.ylabel('Density')
+                # plt.show()
 
-	# Diameters of each graph
-	print "The diameter of g1 is: ", g1.diameter(directed = False)
-	print "The diameter of g2 is: ", g2.diameter(directed = False)
-	print "The diameter of g3 is: ", g3.diameter(directed = False)
+                # plt.hist(g2.degree(),bins = 25 )
+                # plt.title('Degree distribution for n = 1000, p=0.05')
+                # plt.xlabel('Degree')
+                # plt.ylabel('Density')
+                # plt.show()
 
-	# Checking connectivity (Sometimes hangs)
-	if g1.is_connected() == 1:
-		print "Graph g1 is connected."
-	else:
-		print "Graph g1 is disconnected."
+                # plt.hist(g3.degree(),bins = 30 )
+                # plt.title('Degree distribution for n = 1000, p=0.1')
+                # plt.xlabel('Degree')
+                # plt.ylabel('Density')
+                # plt.show()
 
-	if g2.is_connected() == 1:
-		print "Graph g2 is connected."
-	else:
-		print "Graph g2 is disconnected."
+                # Checking connectivity 
+                if g1.is_connected() == 1:
+                        g1_con = g1_con + 1
 
-	if g3.is_connected() == 1:
-		print "Graph g3 is connected."
-	else:
-		print "Graph g3 is disconnected."
+                if g2.is_connected() == 1:
+                        g2_con = g2_con + 1
 
-	# # Sweeping across p-value, found threshold p to be 0.006-0.007
-	pvals = np.linspace(0,0.05,51)
+                if g3.is_connected() == 1:
+                        g3_con = g3_con + 1             
 
-	for p_test in pvals:
-		g_test = Graph.Erdos_Renyi(n=1000,p=p_test)
+                # Calculate diameters 
+                g1_diameter = g1_diameter + g1.diameter()
+                g2_diameter = g2_diameter + g2.diameter()
+                g3_diameter = g3_diameter + g3.diameter()       
 
-		if g_test.is_connected() == 1:
-			print "Graph g_test is connected, with p = ", p_test
-		else:
-			print "Graph g_test is disconnected, with p = ", p_test
+                # Calculate threshold for p such that newtork is connected (part C)
+                g_test = Graph.Erdos_Renyi(n=1000,p=p_temp)
+                while g_test.is_connected() == 0 :
+                        p_temp = p_temp + .001
+                        g_test = Graph.Erdos_Renyi(n=1000,p=p_temp)
+
+                p_tot = p_tot + p_temp
+
+
+        # Print diameters of each graph
+        print "The average diameter for p = 0.01 over 100 trials is: ", g1_diameter/100
+        print "The average diameter for p = 0.05 over 100 trials is: ", g2_diameter/100
+        print "The average diameter for p = 0.1 over 100 trials is: ", g3_diameter/100
+
+        # Print connected/disconnected percentages
+        print "The probability for p = 0.01 being connected is: %", g1_con
+        print "The probability for p = 0.05 being connected is: %", g2_con
+        print "The probability for p = 0.1 being connected is: %", g3_con
+
+        # Print p_c (part C)
+        print "The threshold for p such that the network is connected is : ", p_tot/100
+
+
+
+
 
 def part2():
 
-	print '\n Question 2 \n'
+        print '\n Question 2 \n'
 
-	# Generate network for n = 1,000
-	g1 = Graph.Static_Power_Law(n=1000,m=200,exponent_out=3,exponent_in=-1)
-	g2 = Graph.Static_Power_Law(n=10000,m=200,exponent_out=3,exponent_in=-1)
+        g1_diameter = 0
+        g1_degree = []
 
-	# Plot degree distribution 
-	plt.figure(2)
-	plt.hist(g1.degree())
-	plt.title('Degree distribution for n = 1000 & degree distribution proportional to $x^{-3}$')
-	# plt.show()
+        for i in range(0,100): #100 instances
+                # Generate network for n = 1,000 & 10,000 
+                g1 = Graph.Barabasi(n=1000)
+                g2 = Graph.Barabasi(n=10000)
 
-	# Diameter of graph for n = 1,000
-	print "The diameter of the graph with 1,000 nodes is: ", g1.diameter(directed = False)
-	
-	#Check connectivity
-	if g1.is_connected():
-		print "Graph with 1,000 nodes is connected."
-	else:
-		print "Graph with 1,000 nodes is disconnected."
+                # Diameter of graph for n = 1,000
+                g1_diameter = g1_diameter + g1.diameter()
 
-	# Giant connected component
-	cluster1 = g1.components(mode=STRONG)
-	cluster2 = g2.components(mode=STRONG)
-	GCC1 = cluster1.giant()
-	summary(GCC1)
-	GCC2 = cluster2.giant()
-	summary(GCC2)
-	# Calculate modularity
-	m1 = g1.modularity(cluster1,weights=None)
-	m2 = g2.modularity(cluster2,weights=None)
-	print 'Modularity for network with 1,000 nodes is' , m1
-	print 'Modularity for network with 10,000 nodes is' , m2
-	
+                # concatenate each instance for histogram
+                g1_degree = g1_degree + g1.degree()
 
-	
+
+        # Plot degree distribution 
+        plt.figure(2)
+        plt.hist(g1_degree, bins =20) 
+        plt.title('Degree distribution for n = 1000 & degree distribution proportional to $x^{-3}$')
+        plt.xlabel('Degree')
+        plt.ylabel('Density')
+        plt.show()
+
+        print "The diameter of the graph with 1,000 nodes is: %", g1_diameter/100
+
+        
+        # #Check connectivity
+        # if g1.is_connected():
+        #       print "Graph with 1,000 nodes is connected."
+        # else:
+        #       print "Graph with 1,000 nodes is disconnected."
+
+        # # Giant connected component
+        # cluster1 = g1.clusters()
+        # cluster2 = g2.clusters()
+
+        # GCC1 = cluster1.giant()
+        # GCC2 = cluster2.giant()
+
+        # GCC1_community = GCC1.community_fastgreedy()  
+        # GCC2_community = GCC2.community_fastgreedy()  
+
+        # # Calculate modularity
+        # m1 = Graph.modularity(GCC1_community,weights=None)
+        # m2 = Graph.modularity(GCC2_community,weights=None)
+
+        # print 'Modularity for network with 1,000 nodes is' , m1
+        # print 'Modularity for network with 10,000 nodes is' , m2
+        
+
+        
 def part3():
 
-	g1 = Graph.Erdos_Renyi(n=1000,p=0.01)
-	g2 = Graph.Erdos_Renyi(n=1000,p=0.05)
-	g3 = Graph.Erdos_Renyi(n=1000,p=0.1)
+        g1 = Graph.Barabasi(n=1000, power=1, zero_appeal=1, implementation="bag", start_from=None)
+        
+        plt.hist(g1.degree())
+        plt.title('Degree distribution for Preferential Attachment')
+        plt.show()
+        
 
-	g1.as_undirected()
-	g2.as_undirected()
-	g3.as_undirected()
+
 
 def part4():
 
-	# What are the specs of this?
-	nodes = 1000
-	fwprob = 0.37
-	bwfactor = 0.32/0.37
+        # What are the specs of this?
+        nodes = 1000
+        fwprob = 0.37
+        bwfactor = 0.32/0.37
 
-	g1 = Graph.Forest_Fire(nodes, fwprob, bwfactor, directed = False)
+        g1 = Graph.Forest_Fire(nodes, fwprob, bwfactor, directed = False)
 
-	# # If direction degree dists are needed
-	# dd_in = Graph.degree_distribution(g1,mode="in")
-	# dd_out = Graph.degree_distribution(g1,mode="out")
+        # # If direction degree dists are needed
+        # dd_in = Graph.degree_distribution(g1,mode="in")
+        # dd_out = Graph.degree_distribution(g1,mode="out")
 
-	# Plotting degree distribution
-	plt.hist(g1.degree())
-	plt.title('Degree distribution for Forest Fire')
-	plt.show()
+        # Plotting degree distribution
+        plt.hist(g1.degree())
+        plt.title('Degree distribution for Forest Fire')
+        plt.show()
+
+        # In-Degree distribution (doesn't work yet)
+        # plt.hist(g1.degree(mode = "in"))
+        # plt.title('In-Degree distribution for Forest Fire')
+        # plt.show()
+
+        # plt.hist(g1.degree(mode = "out"))
+        # plt.title('Out-Degree distribution for Forest Fire')
+        # plt.show()      
 
 
 if __name__ == '__main__':
-	main()
+        main()
