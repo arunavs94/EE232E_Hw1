@@ -143,44 +143,48 @@ def part3():
 
         g1 = Graph.Barabasi(n=1000, start_from=None)
         
-        plt.hist(g1.degree())
+        plt.hist(g1.degree(),bins = 100)
         plt.title('Degree distribution for Preferential Attachment')
         plt.show()
+
+        comm = g1.community_fastgreedy()
+        print "The modularity of the community structure is:", g1.modularity(comm.as_clustering())
         
 
 
 
 def part4():
 
-        # What are the specs of this?
+        print "Question 4---------------------------------------------------------"
+
         nodes = 1000
-        fwprob = 0.37
-        bwfactor = 0.32/0.37
+        fwprob = 0.50
+        bwfactor = 0.65
 
         g1 = Graph.Forest_Fire(nodes, fwprob, bwfactor, directed = True)
 
-        # # If direction degree dists are needed
-        # dd_in = Graph.degree_distribution(g1,mode="in")
-        # dd_out = Graph.degree_distribution(g1,mode="out")
-
-        # Plotting degree distribution
-        # plt.hist(g1.degree())
-        # plt.title('Degree distribution for Forest Fire')
-        # plt.show()
-
         # In-Degree distribution 
-        plt.hist(g1.indegree())
+        plt.hist(g1.indegree(), bins = 100)
         plt.title('In-Degree distribution for Forest Fire')
         plt.show()
 
         # Out-Degree distribution
-        plt.hist(g1.outdegree())
+        plt.hist(g1.outdegree(), bins = 100)
         plt.title('Out-Degree distribution for Forest Fire')
         plt.show()      
 
 
+        #Find an average diameter for Forest Fire graphs
+        diameter = 0.0
+        for i in range(0,20):
+                g2 = Graph.Forest_Fire(nodes, fwprob, bwfactor, directed = True)
+                diameter += g2.diameter()
+                
+        print "The average diameter of the 1000 Node Forest Fire graph is:" , diameter/20
 
-        print "The diameter of the 1000 Node Forest Fire graph is:" , g1.diameter()
+        #Measure the community structure
+        print communities(g1)
+        print "The modularity of the community structure is:", g1.modularity(comm.as_clustering())
 
 if __name__ == '__main__':
         main()
