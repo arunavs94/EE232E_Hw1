@@ -16,7 +16,7 @@ def part1():
         g1_con = 0.0; g2_con = 0.0; g3_con = 0.0; 
         p_tot = 0.0
 
-        for i in range(0,100):
+        for i in range(0,50):
                 p_temp = 0.0
 
                 # Generating random networks
@@ -68,9 +68,9 @@ def part1():
 
 
         # Print diameters of each graph
-        print "The average diameter for p = 0.01 over 100 trials is: ", g1_diameter/100
-        print "The average diameter for p = 0.05 over 100 trials is: ", g2_diameter/100
-        print "The average diameter for p = 0.1 over 100 trials is: ", g3_diameter/100
+        print "The average diameter for p = 0.01 over 100 trials is: ", g1_diameter/50
+        print "The average diameter for p = 0.05 over 100 trials is: ", g2_diameter/50
+        print "The average diameter for p = 0.1 over 100 trials is: ", g3_diameter/50
 
         # Print connected/disconnected percentages
         print "The probability for p = 0.01 being connected is: %", g1_con
@@ -78,9 +78,7 @@ def part1():
         print "The probability for p = 0.1 being connected is: %", g3_con
 
         # Print p_c (part C)
-        print "The threshold for p such that the network is connected is : ", p_tot/100
-
-
+        print "The threshold for p such that the network is connected is : ", p_tot/50
 
 
 
@@ -158,33 +156,42 @@ def part4():
         print "Question 4---------------------------------------------------------"
 
         nodes = 1000
-        fwprob = 0.50
+
         bwfactor = 0.65
 
-        g1 = Graph.Forest_Fire(nodes, fwprob, bwfactor, directed = True)
+        #Spinglass is slow, takes a while for modularity on FWprob = .39
+        for i in range(1,4):
 
-        # In-Degree distribution 
-        plt.hist(g1.indegree(), bins = 100)
-        plt.title('In-Degree distribution for Forest Fire')
-        plt.show()
+                fwprob = i*.13
+                g1 = Graph.Forest_Fire(nodes, fwprob, bwfactor, directed = True)
 
-        # Out-Degree distribution
-        plt.hist(g1.outdegree(), bins = 100)
-        plt.title('Out-Degree distribution for Forest Fire')
-        plt.show()      
+                # In-Degree distribution 
+                plt.hist(g1.indegree(), bins = 100)
+                plt.title('In-Degree distribution for Forest Fire')
+                plt.show()
+
+                # Out-Degree distribution
+                plt.hist(g1.outdegree(), bins = 100)
+                plt.title('Out-Degree distribution for Forest Fire')
+                plt.show()      
+
+                comm = g1.community_spinglass()
+                print "The modularity for a FF graph with FW prob", fwprob, "is:", g1.modularity(comm)
+
 
 
         #Find an average diameter for Forest Fire graphs
         diameter = 0.0
         for i in range(0,20):
-                g2 = Graph.Forest_Fire(nodes, fwprob, bwfactor, directed = True)
+                g2 = Graph.Forest_Fire(nodes, .5, bwfactor, directed = True)
                 diameter += g2.diameter()
                 
-        print "The average diameter of the 1000 Node Forest Fire graph is:" , diameter/20
+        print "The average diameter of the 1000 Node FF graph with .5 fwprob is:" , diameter/20
 
-        #Measure the community structure
-        print communities(g1)
-        print "The modularity of the community structure is:", g1.modularity(comm.as_clustering())
+
+
+
+
 
 if __name__ == '__main__':
         main()
