@@ -12,36 +12,22 @@ def main():
 
 def part1():
 
+        print '\n-------------------- Question 1 --------------------\n'
+
+        # initialize variables 
         g1_diameter = 0.0; g2_diameter = 0.0; g3_diameter = 0.0; 
         g1_con = 0.0; g2_con = 0.0; g3_con = 0.0; 
         p_tot = 0.0
 
-        for i in range(0,50):
+        num_iterations = 100
+
+        for i in range(0,num_iterations):
                 p_temp = 0.0
 
                 # Generating random networks
                 g1 = Graph.Erdos_Renyi(n=1000,p=0.01)
                 g2 = Graph.Erdos_Renyi(n=1000,p=0.05)
                 g3 = Graph.Erdos_Renyi(n=1000,p=0.1)
-
-                # Plotting degree distributions (how do we average histogram plots?)
-                # plt.hist(g1.degree(),bins = 20 )
-                # plt.title('Degree distribution for n = 1000, p=0.01')
-                # plt.xlabel('Degree')
-                # plt.ylabel('Density')
-                # plt.show()
-
-                # plt.hist(g2.degree(),bins = 25 )
-                # plt.title('Degree distribution for n = 1000, p=0.05')
-                # plt.xlabel('Degree')
-                # plt.ylabel('Density')
-                # plt.show()
-
-                # plt.hist(g3.degree(),bins = 30 )
-                # plt.title('Degree distribution for n = 1000, p=0.1')
-                # plt.xlabel('Degree')
-                # plt.ylabel('Density')
-                # plt.show()
 
                 # Checking connectivity 
                 if g1.is_connected() == 1:
@@ -66,132 +52,208 @@ def part1():
 
                 p_tot = p_tot + p_temp
 
+        # Plotting degree distributions 
+        plt.figure()
+        plt.hist(g1.degree(),bins = 30 )
+        plt.title('Q1: Degree distribution for n = 1000, p=0.01')
+        plt.xlabel('Degree')
+        plt.ylabel('Frequency')
+
+        plt.figure()
+        plt.hist(g2.degree(),bins = 30 )
+        plt.title('Q1: Degree distribution for n = 1000, p=0.05')
+        plt.xlabel('Degree')
+        plt.ylabel('Frequency')
+
+        plt.figure()
+        plt.hist(g3.degree(),bins = 30 )
+        plt.title('Q1: Degree distribution for n = 1000, p=0.1')
+        plt.xlabel('Degree')
+        plt.ylabel('Frequency')
+
 
         # Print diameters of each graph
-        print "The average diameter for p = 0.01 over 100 trials is: ", g1_diameter/50
-        print "The average diameter for p = 0.05 over 100 trials is: ", g2_diameter/50
-        print "The average diameter for p = 0.1 over 100 trials is: ", g3_diameter/50
+        print "Average diameter for p = 0.01 over", num_iterations, "iterations is: ", g1_diameter/num_iterations
+        print "Average diameter for p = 0.05 over", num_iterations, "iterations is: ", g2_diameter/num_iterations
+        print "Average diameter for p = 0.1 over", num_iterations, "iterations is: ", g3_diameter/num_iterations
 
         # Print connected/disconnected percentages
-        print "The probability for p = 0.01 being connected is: %", g1_con
-        print "The probability for p = 0.05 being connected is: %", g2_con
-        print "The probability for p = 0.1 being connected is: %", g3_con
+        print "Probability for p = 0.01 being connected is: %", (g1_con/num_iterations)*100
+        print "Probability for p = 0.05 being connected is: %", (g2_con/num_iterations)*100
+        print "Probability for p = 0.1 being connected is: %", (g3_con/num_iterations)*100
 
         # Print p_c (part C)
-        print "The threshold for p such that the network is connected is : ", p_tot/50
+        print "Threshold for p such that the network is connected is : ", p_tot/num_iterations
+
+        plt.show()
 
 
 
 def part2():
 
-        print '\n Question 2 \n'
+        print '\n-------------------- Question 2 --------------------\n'
 
-        g1_diameter = 0
-        g1_degree = []
+        # initialze variables 
+        g1_diameter = 0.0; num_connectivity = 0.0; 
+        g1_modularity = 0.0; g2_modularity = 0.0; 
+        com_size_list = []
 
-        for i in range(0,100): #100 instances
-                # Generate network for n = 1,000 & 10,000 
+        num_iterations = 100
+
+        for i in range(0,num_iterations):
                 g1 = Graph.Barabasi(n=1000)
                 g2 = Graph.Barabasi(n=10000)
 
-                # Diameter of graph for n = 1,000
+                # Calculate diameter
                 g1_diameter = g1_diameter + g1.diameter()
 
-                # concatenate each instance for histogram
-                g1_degree = g1_degree + g1.degree()
+                # Check connectivity
+                if g1.is_connected():
+                        num_connectivity = num_connectivity + 1; 
 
+                # fast greedy
+                community1 = g1.community_fastgreedy()  
+                community2 = g2.community_fastgreedy()  
+
+                # Giant connected component
+                GCC1 = community1.as_clustering().giant()
+                GCC1 = community2.as_clustering().giant()
+
+                # Calculate modularity
+                g1_modularity = g1_modularity + g1.modularity(community1.as_clustering())
+                g2_modularity = g2_modularity + g2.modularity(community2.as_clustering())
+
+                # calculate community structure
+                community1_subgraphs = community1.as_clustering().subgraphs()
+                com_size_list = com_size_list + [len(community1_subgraphs)]
 
         # Plot degree distribution 
-        plt.figure(2)
-        plt.hist(g1_degree, bins =20) 
-        plt.title('Degree distribution for n = 1000 & degree distribution proportional to $x^{-3}$')
+        plt.figure()
+        plt.hist(g1.degree(), bins =20) 
+        plt.title('Q2: Fat-Tailed Degree distribution ')
         plt.xlabel('Degree')
-        plt.ylabel('Density')
+        plt.ylabel('Frequency')
+
+        plt.figure()
+        plt.hist(com_size_list,bins=20)
+        plt.title('Q2: Fat-Tailed Community Structure')
+        plt.xlabel('Community Size')
+        plt.ylabel('Frequency')
+
+
+        # Print variables 
+        print 'Average diameter for network with 1,000 nodes over', num_iterations, 'iterations : ' , g1_diameter/num_iterations
+        print 'Probability the fat-tailed network is connected over', num_iterations, 'iterations  : %', (num_connectivity/num_iterations) * 100
+        print 'Modularity for network with 1,000 nodes over', num_iterations, 'iterations : ' , g1_modularity/num_iterations
+        print 'Modularity for network with 10,000 nodes over', num_iterations, 'iterations : ' , g2_modularity/num_iterations
+
         plt.show()
-
-        print "The diameter of the graph with 1,000 nodes is: %", g1_diameter/100
-
-        
-        # #Check connectivity
-        # if g1.is_connected():
-        #       print "Graph with 1,000 nodes is connected."
-        # else:
-        #       print "Graph with 1,000 nodes is disconnected."
-
-        # # Giant connected component
-        # cluster1 = g1.clusters()
-        # cluster2 = g2.clusters()
-
-        # GCC1 = cluster1.giant()
-        # GCC2 = cluster2.giant()
-
-        # GCC1_community = GCC1.community_fastgreedy()  
-        # GCC2_community = GCC2.community_fastgreedy()  
-
-        # # Calculate modularity
-        # m1 = Graph.modularity(GCC1_community,weights=None)
-        # m2 = Graph.modularity(GCC2_community,weights=None)
-
-        # print 'Modularity for network with 1,000 nodes is' , m1
-        # print 'Modularity for network with 10,000 nodes is' , m2
         
 
         
 def part3():
+        print '\n-------------------- Question 3 --------------------\n'
 
-        g1 = Graph.Barabasi(n=1000, start_from=None)
-        
-        plt.hist(g1.degree(),bins = 100)
-        plt.title('Degree distribution for Preferential Attachment')
+        # initialize variables 
+        tot_modularity = 0.0 ; com_size_list = []; 
+
+        num_iterations = 100
+
+        for i in range (0,num_iterations):
+                
+                g = Graph.Barabasi(n=1000)
+
+                # calculate modularity
+                community = g.community_fastgreedy()
+                tot_modularity = tot_modularity + g.modularity(community.as_clustering())
+
+                # calculate community structure
+                community_subgraphs = community.as_clustering().subgraphs()
+                com_size_list = com_size_list + [len(community_subgraphs)]
+
+        # plot degree distribution and community structure for 1 instance
+        plt.figure()
+        plt.hist(g.degree(),bins = 30)
+        plt.title('Q3: Degree Distribution')
+        plt.xlabel('Degree')
+        plt.ylabel('Frequency')
+
+        plt.figure()
+        plt.hist(com_size_list,bins=10)
+        plt.title('Q3: Community Structure')
+        plt.xlabel('Community Size')
+        plt.ylabel('Frequency')
+
+
+        # print variables
+        print "Average Modularity over", num_iterations, "iterations : ", tot_modularity/num_iterations
+        print "Average Community Size over", num_iterations, "iterations : " , mean(com_size_list)
+
         plt.show()
-
-        comm = g1.community_fastgreedy()
-        print "The modularity of the community structure is:", g1.modularity(comm.as_clustering())
-        
-
 
 
 def part4():
+        print '\n-------------------- Question 4 --------------------\n'
 
-        print "Question 4---------------------------------------------------------"
+        # initialize variables 
+        com_size_list = []; tot_modularity = 0.0; tot_diameter = 0.0;
 
-        nodes = 1000
+        # What are the specs of this?
+        nodes = 1000    
+        bwfactor = .65
 
-        bwfactor = 0.65
+        num_iterations = 20
 
-        #Spinglass is slow, takes a while for modularity on FWprob = .39
-        for i in range(1,4):
+        for i in range (0,num_iterations):
+                g1 = Graph.Forest_Fire(n=nodes, fw_prob=.5, bw_factor=bwfactor, directed = True)
 
-                fwprob = i*.13
-                g1 = Graph.Forest_Fire(nodes, fwprob, bwfactor, directed = True)
+                # get community structure / modularity
+                g1_undirected = g1.as_undirected()
+                community = g1_undirected.community_fastgreedy()
+                tot_modularity = tot_modularity + g1_undirected.modularity(community.as_clustering())
+
+                # get diameter
+                tot_diameter = tot_diameter + g1.diameter()
+
+                # get community structure 
+                community_subgraphs = community.as_clustering().subgraphs()
+                com_size_list = com_size_list + [len(community_subgraphs)]
+
+        # Plotting degree distribution for 5 instances w/ different fwprob
+        for i in range (1,6):
+
+                fwprob = i*.12
+                g2 = Graph.Forest_Fire(n=nodes, fw_prob=fwprob, bw_factor=bwfactor, directed = True)
 
                 # In-Degree distribution 
-                plt.hist(g1.indegree(), bins = 100)
-                plt.title('In-Degree distribution for Forest Fire')
+                plt.hist(g2.indegree(), bins = 100)
+                plt.title('In-Degree distribution for Forest Fire with fwprob = %s' %fwprob)
+                plt.xlabel('Degree')
+                plt.ylabel('Frequency')
                 plt.show()
 
                 # Out-Degree distribution
-                plt.hist(g1.outdegree(), bins = 100)
-                plt.title('Out-Degree distribution for Forest Fire')
-                plt.show()      
-
-                comm = g1.community_spinglass()
-                print "The modularity for a FF graph with FW prob", fwprob, "is:", g1.modularity(comm)
-
+                plt.hist(g2.outdegree(), bins = 100)
+                plt.title('Out-Degree distribution for Forest Fire with fwprob = %s' %fwprob)
+                plt.xlabel('Degree')
+                plt.ylabel('Frequency')
+                plt.show()  
 
 
-        #Find an average diameter for Forest Fire graphs
-        diameter = 0.0
-        for i in range(0,20):
-                g2 = Graph.Forest_Fire(nodes, .5, bwfactor, directed = True)
-                diameter += g2.diameter()
-                
-        print "The average diameter of the 1000 Node FF graph with .5 fwprob is:" , diameter/20
+        plt.figure()
+        plt.hist(com_size_list,bins=20)
+        plt.title('Q4: Forest Fire Community Structure')
+        plt.xlabel('Community Size')
+        plt.ylabel('Frequency')
 
 
 
+        # print variables
+        print "Average diameter of the forest fire directed network over", num_iterations, "iterations : ", tot_diameter/num_iterations
+        print "Average Modularity over", num_iterations,"iterations : ", tot_modularity/num_iterations
+        print "Average Community Size over" , num_iterations, "iterations : " , mean(com_size_list)
 
-
+        plt.show()
 
 if __name__ == '__main__':
         main()
