@@ -5,9 +5,9 @@ from matplotlib import pyplot as plt
 import numpy as np
 
 def main():
-        # part1()
-        # part2()
-        # part3()
+        part1()
+        part2()
+        part3()
         part4()
 
 def part1():
@@ -202,7 +202,7 @@ def part4():
         nodes = 1000    
         bwfactor = .65
 
-        num_iterations = 20
+        num_iterations = 100
 
         for i in range (0,num_iterations):
                 g1 = Graph.Forest_Fire(n=nodes, fw_prob=.5, bw_factor=bwfactor, directed = True)
@@ -226,14 +226,14 @@ def part4():
                 g2 = Graph.Forest_Fire(n=nodes, fw_prob=fwprob, bw_factor=bwfactor, directed = True)
 
                 # In-Degree distribution 
-                plt.hist(g2.indegree(), bins = 100)
+                plt.hist(g2.indegree(), bins = 50)
                 plt.title('In-Degree distribution for Forest Fire with fwprob = %s' %fwprob)
                 plt.xlabel('Degree')
                 plt.ylabel('Frequency')
                 plt.show()
 
                 # Out-Degree distribution
-                plt.hist(g2.outdegree(), bins = 100)
+                plt.hist(g2.outdegree(), bins = 50)
                 plt.title('Out-Degree distribution for Forest Fire with fwprob = %s' %fwprob)
                 plt.xlabel('Degree')
                 plt.ylabel('Frequency')
