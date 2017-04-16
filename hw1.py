@@ -6,13 +6,13 @@ import numpy as np
 
 def main():
 	# part1()
-	part2()
+	# part2()
 	# part3()
-	# part4()
+	part4()
 
 def part1():
 
-	print '/n Question 1 /n'
+	print '/n-------------------- Question 1 --------------------/n'
 
 	# initialize variables 
 	g1_diameter = 0.0; g2_diameter = 0.0; g3_diameter = 0.0; 
@@ -88,7 +88,7 @@ def part1():
 
 def part2():
 
-	print '\n Question 2 \n'
+	print '\n-------------------- Question 2 --------------------\n'
 
 	# initialze variables 
 	g1_diameter = 0.0; num_connectivity = 0.0
@@ -140,6 +140,7 @@ def part2():
 
 	
 def part3():
+	print '/n-------------------- Question 3 --------------------/n'
 
 	g1 = Graph.Erdos_Renyi(n=1000,p=0.01)
 	g2 = Graph.Erdos_Renyi(n=1000,p=0.05)
@@ -151,28 +152,52 @@ def part3():
 	g3.as_undirected()
 
 def part4():
+	print '\n-------------------- Question 4 --------------------\n'
+	# initialize variables 
+	com_size_list = []; tot_modularity = 0.0; tot_diameter = 0.0;
 
 	# What are the specs of this?
 	nodes = 1000
-	fwprob = 0.37
+	fwprob = 0.32	
 	bwfactor = 0.32/0.37
 
-	g1 = Graph.Forest_Fire(n=nodes, fw_prob=fwprob, bw_factor=bwfactor, directed = True)
+	for i in range (0,100):
+		g1 = Graph.Forest_Fire(n=nodes, fw_prob=fwprob, bw_factor=bwfactor, directed = True)
 
-	# # If direction degree dists are needed
-	dd_in = g1.indegree()
-	dd_out = g1.outdegree()
-	# # Plotting degree distribution
-	plt.hist(dd_in,bins=30)
+		# get community structure / modularity
+		g1_undirected = g1.as_undirected()
+		community = g1_undirected.community_fastgreedy()
+		tot_modularity = tot_modularity + g1_undirected.modularity(community.as_clustering())
+
+		# get diameter
+		tot_diameter = tot_diameter + g1.diameter()
+
+		# get community structure 
+		community_subgraphs = community.as_clustering().subgraphs()
+		com_size_list = com_size_list + [len(community_subgraphs)]
+
+	# Plotting degree distribution / community structure
+	plt.hist(g1.indegree(),bins=30)
 	plt.title('In-Degree distribution for Forest Fire')
+	plt.xlabel('Degree')
+	plt.ylabel('Frequency')
 	
 	plt.figure()
-	plt.hist(dd_out,bins=30)
+	plt.hist(g1.outdegree(),bins=30)
 	plt.title('Out-Degree distribution for Forest Fire')
+	plt.xlabel('Degree')
+	plt.ylabel('Frequency')
+
+	plt.figure()
+	plt.hist(com_size_list,bins=20)
+	plt.title('Community Structure')
 	plt.show()
+	plt.xlabel('Community Size')
+	plt.ylabel('Frequency')
 
-	print "The diameter of the forest fire directed network is: ", g1.diameter()
-
+	# print variables
+	print "Average diameter of the forest fire directed network over 100 iterations is: ", tot_diameter/100
+	print "Average Modularity over 100 iterations: ", tot_modularity/100
 
 if __name__ == '__main__':
 	main()
