@@ -9,9 +9,9 @@ import cairo
 
 def main():
 	# part1()
-	part2()
+	# part2()
 	# part3()
-	# part4()
+	part4()
 
 def part1():
 
@@ -231,59 +231,72 @@ def part3():
 
 
 def part4():
-	print '\n-------------------- Question 4 --------------------\n'
+  print '\n-------------------- Question 4 --------------------\n'
 
-	# initialize variables 
-	com_size_list = []; tot_modularity = 0.0; tot_diameter = 0.0;
+  # initialize variables 
+  com_size_list = []; tot_modularity = 0.0; tot_diameter = 0.0;
 
-	# What are the specs of this?
-	nodes = 1000
-	fwprob = 0.4	
-	bwfactor = 0.2/0.4
+  nodes = 1000
+  fwprob = 0.4    
+  bwfactor = 0.2/0.4
 
-	num_iterations = 100
+  num_iterations = 100
 
-	for i in range (0,num_iterations):
-		g1 = Graph.Forest_Fire(n=nodes, fw_prob=fwprob, bw_factor=bwfactor, directed = True)
+  for i in range (0,num_iterations):
+          g1 = Graph.Forest_Fire(n=nodes, fw_prob=fwprob, bw_factor=bwfactor, directed = True)
 
-		# get community structure / modularity
-		g1_undirected = g1.as_undirected()
-		community = g1_undirected.community_fastgreedy()
-		tot_modularity = tot_modularity + g1_undirected.modularity(community.as_clustering())
+          # get community structure / modularity
+          g1_undirected = g1.as_undirected()
+          community = g1_undirected.community_fastgreedy()
+          tot_modularity = tot_modularity + g1_undirected.modularity(community.as_clustering())
 
-		# get diameter
-		tot_diameter = tot_diameter + g1.diameter()
+          # get diameter
+          tot_diameter = tot_diameter + g1.diameter()
 
-		# get community structure 
-		community_subgraphs = community.as_clustering().subgraphs()
-		com_size_list = com_size_list + [len(community_subgraphs)]
+          # get community structure 
+          community_subgraphs = community.as_clustering().subgraphs()
+          com_size_list = com_size_list + [len(community_subgraphs)]
 
-	# Plotting degree distribution / community structure for 1 instance
-	plt.hist(g1.indegree(),bins=30)
-	plt.title('Q4: Forest Fire In-Degree distribution')
-	plt.xlabel('Degree')
-	plt.ylabel('Frequency')
-	
-	plt.figure()
-	plt.hist(g1.outdegree(),bins=30)
-	plt.title('Q4: Forset Fire Out-Degree distribution')
-	plt.xlabel('Degree')
-	plt.ylabel('Frequency')
+  # Plotting degree distribution for 5 instances w/ different fwprob
+  for i in range (1,6):
 
-	plt.figure()
-	plt.hist(com_size_list,bins=20)
-	plt.title('Q4: Forest Fire Community Structure')
-	plt.xlabel('Community Size')
-	plt.ylabel('Frequency')
+          fwprob = i*.12
+          g2 = Graph.Forest_Fire(n=nodes, fw_prob=fwprob, bw_factor=bwfactor, directed = True)
+
+          # In-Degree distribution 
+          plt.hist(g2.indegree(), bins = 50)
+          plt.title('In-Degree distribution for Forest Fire with fwprob = %s' %fwprob)
+          plt.xlabel('Degree')
+          plt.ylabel('Frequency')
+          plt.show()
+
+          # Out-Degree distribution
+          plt.hist(g2.outdegree(), bins = 50)
+          plt.title('Out-Degree distribution for Forest Fire with fwprob = %s' %fwprob)
+          plt.xlabel('Degree')
+          plt.ylabel('Frequency')
+          plt.show()  
+
+  #Show community structure
+  plt.figure()
+  plt.hist(com_size_list,bins=20)
+  plt.title('Q4: Forest Fire Community Structure')
+  plt.xlabel('Community Size')
+  plt.ylabel('Frequency')
+
+  
+  #Plot graph
+  layout = g1.layout("auto")
+  plot(g1, layout = layout)
 
 
+  # print variables
+  print "Average diameter of the forest fire directed network over", num_iterations, "iterations : ", tot_diameter/num_iterations
+  print "Average Modularity over", num_iterations,"iterations : ", tot_modularity/num_iterations
+  print "Average Community Size over" , num_iterations, "iterations : " , mean(com_size_list)
 
-	# print variables
-	print "Average diameter of the forest fire directed network over", num_iterations, "iterations : ", tot_diameter/100
-	print "Average Modularity over", num_iterations,"iterations : ", tot_modularity/100
-	print "Average Community Size over" , num_iterations, "iterations : " , mean(com_size_list)
+  plt.show()
 
-	plt.show()
 
 if __name__ == '__main__':
 	main()
