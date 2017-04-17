@@ -3,18 +3,20 @@ import matplotlib as mpl
 mpl.use('TkAgg')
 from matplotlib import pyplot as plt
 import numpy as np
+import random as rnd
+import pprint
 
 def main():
-        part1()
-        part2()
-        part3()
+        # part1()
+        # part2()
+        # part3()
         part4()
 
 def part1():
 
         print '\n-------------------- Question 1 --------------------\n'
 
-        # initialize variables 
+        # initialize variables  
         g1_diameter = 0.0; g2_diameter = 0.0; g3_diameter = 0.0; 
         g1_con = 0.0; g2_con = 0.0; g3_con = 0.0; 
         p_tot = 0.0
@@ -127,6 +129,27 @@ def part2():
                 community1_subgraphs = community1.as_clustering().subgraphs()
                 com_size_list = com_size_list + [len(community1_subgraphs)]
 
+        # Integrate into rest of code after done checking functionality
+        # Part D
+
+        deg_j_list = []
+
+        for i in range (0,num_iterations):
+
+                # Pick a node
+                node_i = rnd.randrange(0,10000)
+
+                # Determine neighbors
+                neighbors_i = Graph.neighbors(g2,node_i)
+
+                if len(neighbors_i) == 1:
+                        node_j = neighbors_i[0]
+                else:
+                        node_j = rnd.randrange(0,len(neighbors_i))
+
+                degree_j = Graph.degree(g2,node_j)
+                deg_j_list.append(degree_j)
+
         # Plot degree distribution 
         plt.figure()
         plt.hist(g1.degree(), bins =20) 
@@ -140,6 +163,11 @@ def part2():
         plt.xlabel('Community Size')
         plt.ylabel('Frequency')
 
+        plt.figure()
+        plt.hist(deg_j_list, bins = 20)
+        plt.title('Q2: J Node Degree Distribution')
+        plt.xlabel('Degree')
+        plt.ylabel('Frequency')
 
         # Print variables 
         print 'Average diameter for network with 1,000 nodes over', num_iterations, 'iterations : ' , g1_diameter/num_iterations
@@ -148,8 +176,6 @@ def part2():
         print 'Modularity for network with 10,000 nodes over', num_iterations, 'iterations : ' , g2_modularity/num_iterations
 
         plt.show()
-        
-
         
 def part3():
         print '\n-------------------- Question 3 --------------------\n'
@@ -199,13 +225,14 @@ def part4():
         com_size_list = []; tot_modularity = 0.0; tot_diameter = 0.0;
 
         # What are the specs of this?
-        nodes = 1000    
-        bwfactor = .65
+        nodes = 1000
+        fwprob = 0.4    
+        bwfactor = 0.2/0.4
 
         num_iterations = 100
 
         for i in range (0,num_iterations):
-                g1 = Graph.Forest_Fire(n=nodes, fw_prob=.5, bw_factor=bwfactor, directed = True)
+                g1 = Graph.Forest_Fire(n=nodes, fw_prob=fwprob, bw_factor=bwfactor, directed = True)
 
                 # get community structure / modularity
                 g1_undirected = g1.as_undirected()
@@ -239,7 +266,6 @@ def part4():
                 plt.ylabel('Frequency')
                 plt.show()  
 
-
         plt.figure()
         plt.hist(com_size_list,bins=20)
         plt.title('Q4: Forest Fire Community Structure')
@@ -249,8 +275,8 @@ def part4():
 
 
         # print variables
-        print "Average diameter of the forest fire directed network over", num_iterations, "iterations : ", tot_diameter/num_iterations
-        print "Average Modularity over", num_iterations,"iterations : ", tot_modularity/num_iterations
+        print "Average diameter of the forest fire directed network over", num_iterations, "iterations : ", tot_diameter/100
+        print "Average Modularity over", num_iterations,"iterations : ", tot_modularity/100
         print "Average Community Size over" , num_iterations, "iterations : " , mean(com_size_list)
 
         plt.show()
