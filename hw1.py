@@ -5,11 +5,12 @@ from matplotlib import pyplot as plt
 import numpy as np
 import random as rnd
 import pprint
+import cairo
 
 def main():
-        # part1()
-        # part2()
-        # part3()
+        part1()
+        part2()
+        part3()
         part4()
 
 def part1():
@@ -119,7 +120,7 @@ def part2():
 
                 # Giant connected component
                 GCC1 = community1.as_clustering().giant()
-                GCC1 = community2.as_clustering().giant()
+                GCC2 = community2.as_clustering().giant()
 
                 # Calculate modularity
                 g1_modularity = g1_modularity + g1.modularity(community1.as_clustering())
@@ -128,6 +129,14 @@ def part2():
                 # calculate community structure
                 community1_subgraphs = community1.as_clustering().subgraphs()
                 com_size_list = com_size_list + [len(community1_subgraphs)]
+        
+        (ind,list_gcc) = max(enumerate(community1.as_clustering()), key = lambda tup: len(tup[1]))
+
+        layout = g1.layout("auto")
+        for i in list_gcc:
+                g1.vs[i]["color"] = "blue"
+        plot(g1,layout = layout)
+
 
         # Integrate into rest of code after done checking functionality
         # Part D
@@ -197,6 +206,9 @@ def part3():
                 community_subgraphs = community.as_clustering().subgraphs()
                 com_size_list = com_size_list + [len(community_subgraphs)]
 
+        layout = g.layout("auto")
+        plot(g,layout = layout)
+
         # plot degree distribution and community structure for 1 instance
         plt.figure()
         plt.hist(g.degree(),bins = 30)
@@ -224,7 +236,6 @@ def part4():
         # initialize variables 
         com_size_list = []; tot_modularity = 0.0; tot_diameter = 0.0;
 
-        # What are the specs of this?
         nodes = 1000
         fwprob = 0.4    
         bwfactor = 0.2/0.4
@@ -266,17 +277,22 @@ def part4():
                 plt.ylabel('Frequency')
                 plt.show()  
 
+        #Show community structure
         plt.figure()
         plt.hist(com_size_list,bins=20)
         plt.title('Q4: Forest Fire Community Structure')
         plt.xlabel('Community Size')
         plt.ylabel('Frequency')
 
+        
+        #Plot graph
+        layout = g1.layout("auto")
+        plot(g1, layout = layout)
 
 
         # print variables
-        print "Average diameter of the forest fire directed network over", num_iterations, "iterations : ", tot_diameter/100
-        print "Average Modularity over", num_iterations,"iterations : ", tot_modularity/100
+        print "Average diameter of the forest fire directed network over", num_iterations, "iterations : ", tot_diameter/num_iterations
+        print "Average Modularity over", num_iterations,"iterations : ", tot_modularity/num_iterations
         print "Average Community Size over" , num_iterations, "iterations : " , mean(com_size_list)
 
         plt.show()
