@@ -101,7 +101,7 @@ def part2():
 	g1_modularity = 0.0; g2_modularity = 0.0; 
 	com_size_list = []
 
-	num_iterations = 1
+	num_iterations = 100
 
 	for i in range(0,num_iterations):
 		g1 = Graph.Barabasi(n=1000)
@@ -137,7 +137,6 @@ def part2():
 		g1.vs[i]["color"] = "blue"
 	plot(g1,layout = layout)
 
-	
 
 	# Integrate into rest of code after done checking functionality
 	# Part D
@@ -207,7 +206,7 @@ def part3():
 		community_subgraphs = community.as_clustering().subgraphs()
 		com_size_list = com_size_list + [len(community_subgraphs)]
 
-	layout = g.layout("kk")
+	layout = g.layout("auto")
 	plot(g,layout = layout)
 
 	# plot degree distribution and community structure for 1 instance
