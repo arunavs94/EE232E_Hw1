@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import random as rnd
 import pprint
+import cairo
 
 def main():
 	# part1()
@@ -100,7 +101,7 @@ def part2():
 	g1_modularity = 0.0; g2_modularity = 0.0; 
 	com_size_list = []
 
-	num_iterations = 100
+	num_iterations = 1
 
 	for i in range(0,num_iterations):
 		g1 = Graph.Barabasi(n=1000)
@@ -119,7 +120,7 @@ def part2():
 
 		# Giant connected component
 		GCC1 = community1.as_clustering().giant()
-		GCC1 = community2.as_clustering().giant()
+		GCC2 = community2.as_clustering().giant()
 
 		# Calculate modularity
 		g1_modularity = g1_modularity + g1.modularity(community1.as_clustering())
@@ -128,6 +129,15 @@ def part2():
 		# calculate community structure
 		community1_subgraphs = community1.as_clustering().subgraphs()
 		com_size_list = com_size_list + [len(community1_subgraphs)]
+	
+	(ind,list_gcc) = max(enumerate(community1.as_clustering()), key = lambda tup: len(tup[1]))
+
+	layout = g1.layout("auto")
+	for i in list_gcc:
+		g1.vs[i]["color"] = "blue"
+	plot(g1,layout = layout)
+
+	
 
 	# Integrate into rest of code after done checking functionality
 	# Part D
@@ -197,6 +207,9 @@ def part3():
 		community_subgraphs = community.as_clustering().subgraphs()
 		com_size_list = com_size_list + [len(community_subgraphs)]
 
+	layout = g.layout("kk")
+	plot(g,layout = layout)
+
 	# plot degree distribution and community structure for 1 instance
 	plt.figure()
 	plt.hist(g.degree(),bins = 30)
@@ -226,8 +239,8 @@ def part4():
 
 	# What are the specs of this?
 	nodes = 1000
-	fwprob = 0.32	
-	bwfactor = 0.32/0.37
+	fwprob = 0.4	
+	bwfactor = 0.2/0.4
 
 	num_iterations = 100
 
