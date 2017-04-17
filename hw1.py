@@ -268,9 +268,10 @@ def part4():
           plt.title('In-Degree distribution for Forest Fire with fwprob = %s' %fwprob)
           plt.xlabel('Degree')
           plt.ylabel('Frequency')
-          plt.show()
+          
 
           # Out-Degree distribution
+          plt.figure()
           plt.hist(g2.outdegree(), bins = 50)
           plt.title('Out-Degree distribution for Forest Fire with fwprob = %s' %fwprob)
           plt.xlabel('Degree')
