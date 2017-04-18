@@ -284,14 +284,14 @@ def part4():
 
   # In-Degree distribution 
   plt.hist(g1.indegree(), bins = 20)
-  plt.title('In-Degree distribution for Forest Fire with fwprob = 0.2')
+  plt.title('In-Degree distribution for Forest Fire with fwprob = 0.4')
   plt.xlabel('Degree')
   plt.ylabel('Frequency')
  
   # Out-Degree distribution
   plt.figure()
   plt.hist(g1.outdegree(), bins = 20)
-  plt.title('Out-Degree distribution for Forest Fire with fwprob = 0.2' )
+  plt.title('Out-Degree distribution for Forest Fire with fwprob = 0.4' )
   plt.xlabel('Degree')
   plt.ylabel('Frequency')
 
