@@ -1,3 +1,6 @@
+# The code in this file is for Questions 1,2, and 4
+# Question 3 was done in R
+
 from igraph import *
 import matplotlib as mpl
 mpl.use('TkAgg')
@@ -8,8 +11,8 @@ import pprint
 import cairo
 
 def main():
-	# part1()
-	# part2()
+	part1()
+	part2()
 	# part3()
 	part4()
 
@@ -57,19 +60,19 @@ def part1():
 
 	# Plotting degree distributions 
 	plt.figure()
-	plt.hist(g1.degree(),bins = 30 )
+	plt.hist(g1.degree(),bins = 20 )
 	plt.title('Q1: Degree distribution for n = 1000, p=0.01')
 	plt.xlabel('Degree')
 	plt.ylabel('Frequency')
 
 	plt.figure()
-	plt.hist(g2.degree(),bins = 30 )
+	plt.hist(g2.degree(),bins = 20 )
 	plt.title('Q1: Degree distribution for n = 1000, p=0.05')
 	plt.xlabel('Degree')
 	plt.ylabel('Frequency')
 
 	plt.figure()
-	plt.hist(g3.degree(),bins = 30 )
+	plt.hist(g3.degree(),bins = 20 )
 	plt.title('Q1: Degree distribution for n = 1000, p=0.1')
 	plt.xlabel('Degree')
 	plt.ylabel('Frequency')
@@ -137,13 +140,13 @@ def part2():
 		g1.vs[i]["color"] = "blue"
 	plot(g1,layout = layout)
 
-
-	# Integrate into rest of code after done checking functionality
 	# Part D
 
 	deg_j_list = []
 
-	for i in range (0,num_iterations):
+	num_iterations_j = 500
+
+	for i in range (0,num_iterations_j):
 
 		# Pick a node
 		node_i = rnd.randrange(0,10000)
@@ -167,7 +170,7 @@ def part2():
 	plt.ylabel('Frequency')
 
 	plt.figure()
-	plt.hist(com_size_list,bins=20)
+	plt.hist(com_size_list,bins=15)
 	plt.title('Q2: Fat-Tailed Community Structure')
 	plt.xlabel('Community Size')
 	plt.ylabel('Frequency')
@@ -181,53 +184,54 @@ def part2():
 	# Print variables 
 	print 'Average diameter for network with 1,000 nodes over', num_iterations, 'iterations : ' , g1_diameter/num_iterations
 	print 'Probability the fat-tailed network is connected over', num_iterations, 'iterations  : %', (num_connectivity/num_iterations) * 100
+	print "Average Community Size over", num_iterations, "iterations : " , mean(com_size_list)
 	print 'Modularity for network with 1,000 nodes over', num_iterations, 'iterations : ' , g1_modularity/num_iterations
 	print 'Modularity for network with 10,000 nodes over', num_iterations, 'iterations : ' , g2_modularity/num_iterations
 
 	plt.show()
 	
-def part3():
-	print '\n-------------------- Question 3 --------------------\n'
+# def part3():
+	# print '\n-------------------- Question 3 --------------------\n'
 
-	# initialize variables 
-	tot_modularity = 0.0 ; com_size_list = []; 
+	# # initialize variables 
+	# tot_modularity = 0.0 ; com_size_list = []; 
 
-	num_iterations = 100
+	# num_iterations = 100
 
-	for i in range (0,num_iterations):
+	# for i in range (0,num_iterations):
 		
-		g = Graph.Barabasi(n=1000)
+	# 	g = Graph.Barabasi(n=1000)
 
-		# calculate modularity
-		community = g.community_fastgreedy()
-		tot_modularity = tot_modularity + g.modularity(community.as_clustering())
+	# 	# calculate modularity
+	# 	community = g.community_fastgreedy()
+	# 	tot_modularity = tot_modularity + g.modularity(community.as_clustering())
 
-		# calculate community structure
-		community_subgraphs = community.as_clustering().subgraphs()
-		com_size_list = com_size_list + [len(community_subgraphs)]
+	# 	# calculate community structure
+	# 	community_subgraphs = community.as_clustering().subgraphs()
+	# 	com_size_list = com_size_list + [len(community_subgraphs)]
 
-	layout = g.layout("auto")
-	plot(g,layout = layout)
+	# layout = g.layout("auto")
+	# plot(g,layout = layout)
 
-	# plot degree distribution and community structure for 1 instance
-	plt.figure()
-	plt.hist(g.degree(),bins = 30)
-	plt.title('Q3: Degree Distribution')
-	plt.xlabel('Degree')
-	plt.ylabel('Frequency')
+	# # plot degree distribution and community structure for 1 instance
+	# plt.figure()
+	# plt.hist(g.degree(),bins = 30)
+	# plt.title('Q3: Degree Distribution')
+	# plt.xlabel('Degree')
+	# plt.ylabel('Frequency')
 
-	plt.figure()
-	plt.hist(com_size_list,bins=10)
-	plt.title('Q3: Community Structure')
-	plt.xlabel('Community Size')
-	plt.ylabel('Frequency')
+	# plt.figure()
+	# plt.hist(com_size_list,bins=10)
+	# plt.title('Q3: Community Structure')
+	# plt.xlabel('Community Size')
+	# plt.ylabel('Frequency')
 
 
-	# print variables
-	print "Average Modularity over", num_iterations, "iterations : ", tot_modularity/num_iterations
-	print "Average Community Size over", num_iterations, "iterations : " , mean(com_size_list)
+	# # print variables
+	# print "Average Modularity over", num_iterations, "iterations : ", tot_modularity/num_iterations
+	# print "Average Community Size over", num_iterations, "iterations : " , mean(com_size_list)
 
-	plt.show()
+	# plt.show()
 
 
 def part4():
@@ -264,32 +268,43 @@ def part4():
           g2 = Graph.Forest_Fire(n=nodes, fw_prob=fwprob, bw_factor=bwfactor, directed = True)
 
           # In-Degree distribution 
-          plt.hist(g2.indegree(), bins = 50)
+          plt.hist(g2.indegree(), bins = 20)
           plt.title('In-Degree distribution for Forest Fire with fwprob = %s' %fwprob)
           plt.xlabel('Degree')
           plt.ylabel('Frequency')
           
-
           # Out-Degree distribution
           plt.figure()
-          plt.hist(g2.outdegree(), bins = 50)
+          plt.hist(g2.outdegree(), bins = 20)
           plt.title('Out-Degree distribution for Forest Fire with fwprob = %s' %fwprob)
           plt.xlabel('Degree')
           plt.ylabel('Frequency')
           plt.show()  
 
+
+  # In-Degree distribution 
+  plt.hist(g1.indegree(), bins = 20)
+  plt.title('In-Degree distribution for Forest Fire with fwprob = 0.2')
+  plt.xlabel('Degree')
+  plt.ylabel('Frequency')
+ 
+  # Out-Degree distribution
+  plt.figure()
+  plt.hist(g1.outdegree(), bins = 20)
+  plt.title('Out-Degree distribution for Forest Fire with fwprob = 0.2' )
+  plt.xlabel('Degree')
+  plt.ylabel('Frequency')
+
   #Show community structure
   plt.figure()
-  plt.hist(com_size_list,bins=20)
+  plt.hist(com_size_list,bins=10)
   plt.title('Q4: Forest Fire Community Structure')
   plt.xlabel('Community Size')
   plt.ylabel('Frequency')
-
   
   #Plot graph
   layout = g1.layout("auto")
   plot(g1, layout = layout)
-
 
   # print variables
   print "Average diameter of the forest fire directed network over", num_iterations, "iterations : ", tot_diameter/num_iterations
